@@ -2,7 +2,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = "~> 4.0.0"
+      version = "~> 5.29.0"
     }
     random = {
       source  = "hashicorp/random"
@@ -31,14 +31,38 @@ data "archive_file" "lambda_hello_world" {
 
 resource "aws_lambda_function" "lambda_hello_world" {
   filename = "hello-world.zip"
-  function_name = "LambdaHelloWorld"
+  function_name = "KodiakLambdaHelloWorld"
 
-  runtime = "nodejs14.x"
+  runtime = "nodejs20.x"
   handler = "hello.handler"
 
   source_code_hash = data.archive_file.lambda_hello_world.output_base64sha256
   role = aws_iam_role.lambda_exec.arn
 }
+
+resource "aws_lambda_function_url" "lambda_hello_world_function_url" {
+  function_name      = aws_lambda_function.lambda_hello_world.arn
+  authorization_type = "NONE"
+}
+
+resource "aws_lambda_invocation" "lambda_invocation" {
+  function_name = aws_lambda_function.lambda_hello_world.function_name
+
+  input = jsonencode({
+    hello = "world"
+  })
+
+  triggers = {
+    redeployment = timestamp()
+  }
+
+  depends_on = [aws_lambda_function.lambda_hello_world]
+}
+
+
+
+
+
 
 resource "aws_cloudwatch_log_group" "hello_world" {
   name = "/aws/lambda/${aws_lambda_function.lambda_hello_world.function_name}"
