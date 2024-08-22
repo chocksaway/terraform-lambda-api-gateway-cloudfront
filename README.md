@@ -67,4 +67,62 @@ Don’t forget ```terraform destroy``` - so you don’t incur additional AWS cos
 
 ##### terratest, localstack and tflocal updates
 
+```
+$ tflocal apply
+data.archive_file.lambda_hello_world: Reading...
+data.archive_file.lambda_hello_world: Read complete after 0s
+
+Terraform used the selected providers to generate the following execution plan. Resource actions are indicated with the following symbols:
+  + create
+
+Terraform will perform the following actions:
+
+  # aws_apigatewayv2_api.lambda will be created
+  + resource "aws_apigatewayv2_api" "lambda" {
+      + api_endpoint                 = (known after apply)
+      + api_key_selection_expression = "$request.header.x-api-key"
+      + arn                          = (known after apply)
+      + execution_arn                = (known after apply)
+      + id                           = (known after apply)
+      + name                         = "serverless_lambda_gw"
+      + protocol_type                = "HTTP"
+      + route_selection_expression   = "$request.method $request.path"
+      + tags_all                     = (known after apply)
+
+      + cors_configuration {
+          + allow_methods = [
+              + "GET",
+              + "HEAD",
+              + "OPTIONS",
+            ]
+        }
+    }
+
+  # aws_apigatewayv2_integration.hello_world will be created
+  + resource "aws_apigatewayv2_integration" "hello_world" {
+      + api_id                                    = (known after apply)
+      + connection_type                           = "INTERNET"
+      + id                                        = (known after apply)
+      + integration_method                        = "POST"
+      + integration_response_selection_expression = (known after apply)
+      + integration_type                          = "AWS_PROXY"
+      + integration_uri                           = (known after apply)
+      + payload_format_version                    = "1.0"
+      + timeout_milliseconds                      = (known after apply)
+    }
+[snip]
+
+
+Apply complete! Resources: 14 added, 0 changed, 0 destroyed.
+
+Outputs:
+
+api_gateway_base_url = "https://9fcdea48.execute-api.eu-west-1.amazonaws.com/serverless_lambda_stage"
+cloudfront_domain_name = "32bfead6.cloudfront.localhost.localstack.cloud"
+function_name = "KodiakLambdaHelloWorld"
+function_url = "http://66znf6yvnqr50zilk9i0ohi630ajouc8.lambda-url.eu-west-1.localhost.localstack.cloud:4566/"
+lambda_invoke = "{\"statusCode\":200,\"headers\":{\"Content-Type\":\"application/json\"},\"body\":\"{\\\"message\\\":\\\"Hello, World!\\\"}\"}"
+```
+
+
 
